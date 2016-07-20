@@ -1,0 +1,28 @@
+<?php
+/**
+ * @file
+ */
+
+function stanford_lbre_helper_views_pre_view(&$view, &$display_id, &$args) {
+  if (arg(0) == 'node') {
+    $nid = arg(1);
+    $node = node_load($nid);
+    $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
+    switch ($view->name) {
+      case 'stanford_events_views':
+        $view->display['block']->handler->options['filters']['tid']['id'] = 'tid';
+        $view->display['block']->handler->options['filters']['tid']['table'] = 'taxonomy_index';
+        $view->display['block']->handler->options['filters']['tid']['field'] = 'tid';
+        $view->display['block']->handler->options['filters']['tid']['relationship'] = 'none';
+        $view->display['block']->handler->options['filters']['tid']['group_type'] = 'none';
+        $view->display['block']->handler->options['filters']['tid']['ui_name'] = '';
+        $view->display['block']->handler->options['filters']['tid']['operator'] = 'or';
+        $view->display['block']->handler->options['filters']['tid']['value'] = array($node_tid => $node_tid);
+        $view->display['block']->handler->options['filters']['tid']['vocabulary'] = 'stanford_subsites_sites';
+        $view->display['block']->handler->options['filters']['tid']['hierarchy'] = 0;
+        break;
+    }
+  }
+}
+
+

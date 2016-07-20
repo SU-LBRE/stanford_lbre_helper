@@ -1,0 +1,4 @@
+name = LBRE Helper
+description = "A bunch of one off code for the LBRE website."
+core = 7.x
+package = LBRE

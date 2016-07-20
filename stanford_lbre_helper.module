@@ -13,12 +13,10 @@ function stanford_lbre_helper_views_pre_view(&$view, &$display_id, &$args) {
       $node_tid = array($node_tid => $node_tid);
     }
     else {
-      $node_tid = ''; //NULL; //array();
+      $node_tid = '';
     }
-    dpm($node_tid);
     switch ($view->name) {
       case 'stanford_events_views':
-        dpm($view->display['block']);
         $view->display['block']->handler->options['filters']['tid']['id'] = 'tid';
         $view->display['block']->handler->options['filters']['tid']['table'] = 'taxonomy_index';
         $view->display['block']->handler->options['filters']['tid']['field'] = 'tid';

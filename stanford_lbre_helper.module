@@ -31,7 +31,6 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
             'value' => $node_tid,
             'operator' => '='
         );
-        dpm($view->query);
       }
     }
   }

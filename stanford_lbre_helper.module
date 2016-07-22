@@ -3,33 +3,42 @@
  * @file
  */
 
-function stanford_lbre_helper_views_pre_view(&$view, &$display_id, &$args) {
-  if (arg(0) == 'node') {
-    $nid = arg(1);
-    $node = node_load($nid);
-    $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
-    $tids = array_keys(taxonomy_allowed_values(field_info_field('field_stanford_subsite_sub_tags')));
-    if (in_array($node_tid, $tids)) {
-      $node_tid = array($node_tid => $node_tid);
-    }
-    else {
-      $node_tid = '';
-    }
-    switch ($view->name) {
-      case 'stanford_events_views':
-        $view->display['block']->handler->options['filters']['tid']['id'] = 'tid';
-        $view->display['block']->handler->options['filters']['tid']['table'] = 'taxonomy_index';
-        $view->display['block']->handler->options['filters']['tid']['field'] = 'tid';
-        $view->display['block']->handler->options['filters']['tid']['relationship'] = 'none';
-        $view->display['block']->handler->options['filters']['tid']['group_type'] = 'none';
-        $view->display['block']->handler->options['filters']['tid']['ui_name'] = '';
-        $view->display['block']->handler->options['filters']['tid']['operator'] = 'or';
-        $view->display['block']->handler->options['filters']['tid']['value'] = $node_tid;
-        $view->display['block']->handler->options['filters']['tid']['vocabulary'] = 'stanford_subsites_sites';
-        $view->display['block']->handler->options['filters']['tid']['hierarchy'] = 0;
-        break;
+/**
+ * Implements hook_views_query_alter().
+ * Adding term filter for subsites.
+ */
+function stanford_lbre_helper_views_query_alter(&$view, &$query) {
+  if (($view->name == 'stanford_events_views' && $view->current_display == 'block')
+  || ($view->name == 'stanford_news' && $view->current_display == 'block_2_item_recent_news_list')) {
+    //cache_clear_all($view->name, 'cache_views_data', TRUE);
+    if (arg(0) == 'node') {
+      $nid = arg(1);
+      $node = node_load($nid);
+      if ($node->type == 'stanford_subsite') {
+        $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
+        $join = new views_join();
+        $join->table = 'taxonomy_index';
+        $join->field = 'nid';
+        $join->left_table = 'node';
+        $join->left_field = 'nid';
+        $join->type = 'INNER';
+        //add the join the the view query
+        $view->query->add_relationship('taxonomy_index',$join,'node');
+    
+        //add the where
+        $view->query->where[1]['conditions'][] = array(
+            'field' => 'taxonomy_index.tid',
+            'value' => $node_tid,
+            'operator' => '='
+        );
+        dpm($view->query);
+      }
     }
   }
 }
 
-
+function stanford_lbre_helper_block_info_alter(&$blocks, $theme, $code_blocks) {
+  // Remove the caching on subsite blocks.
+  $blocks['views']['stanford_events_views-block']['cache'] = DRUPAL_NO_CACHE;
+  $blocks['views']['f73ff55b085ea49217d347de6630cd5a']['cache'] = DRUPAL_NO_CACHE;
+}

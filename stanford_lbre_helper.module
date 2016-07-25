@@ -8,14 +8,19 @@
  * Adding term filter for subsites.
  */
 function stanford_lbre_helper_views_query_alter(&$view, &$query) {
+  //dpm($view);
+  //dpm($view->query);
   if (($view->name == 'stanford_events_views' && $view->current_display == 'block')
-  || ($view->name == 'stanford_news' && $view->current_display == 'block_2_item_recent_news_list')) {
+  || ($view->name == 'stanford_news' && $view->current_display == 'block_2_item_recent_news_list')
+  || ($view->name == 'stanford_person_vpsa' && $view->current_display == 'block_staff')
+  || ($view->name == 'stanford_slides_full_width_banner' && $view->current_display == 'block')) {
     //cache_clear_all($view->name, 'cache_views_data', TRUE);
     if (arg(0) == 'node') {
       $nid = arg(1);
       $node = node_load($nid);
-      if ($node->type == 'stanford_subsite') {
-        $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
+      $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
+      $tids = array_keys(taxonomy_allowed_values(field_info_field('field_stanford_subsite_sub_tags')));
+      if (in_array($node_tid, $tids)) {
         $join = new views_join();
         $join->table = 'taxonomy_index';
         $join->field = 'nid';
@@ -31,6 +36,8 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
             'value' => $node_tid,
             'operator' => '='
         );
+        //dpm($view->name);
+        //dpm($view->query);
       }
     }
   }

@@ -36,28 +36,45 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
         );
       }
     }
-  } elseif (($view->name == 'guides' && $view->current_display == 'block')) {
+  } elseif (($view->name == 'guides_filter' && $view->current_display == 'block')) {
     if (arg(0) == 'node') {
       $nid = arg(1);
       $node = node_load($nid);
       $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
       $tids = array_keys(taxonomy_allowed_values(field_info_field('field_stanford_subsite_sub_tags')));
-      if (in_array($node_tid, $tids)) {
-        $related_tids = array_keys(taxonomy_allowed_values(field_info_field('field_s_guides_relates_to')));
+      $related_tids = array_keys(taxonomy_allowed_values(field_info_field('field_s_guides_relates_to')));
+      if (in_array($node_tid, $tids) || in_array($node_tid, $related_tids)) {
+        
         // We want all the terms from the current subsite as well as the guides with related terms.
         $all_tids = array_merge($tids, $related_tids);
         $join = new views_join();
-        $join->table = 'taxonomy_index';
-        $join->field = 'nid';
+        $join->table = 'field_data_field_stanford_subsite_sub_tags';
+        $join->field = 'entity_id';
         $join->left_table = 'node';
         $join->left_field = 'nid';
         $join->type = 'INNER';
         //add the join the the view query
-        $view->query->add_relationship('taxonomy_index',$join,'node');
-    
+        $view->query->add_relationship('field_data_field_stanford_subsite_sub_tags',$join,'node');
+        
         //add the where
         $view->query->where[1]['conditions'][] = array(
-            'field' => 'taxonomy_index.tid',
+            'field' => 'field_data_field_stanford_subsite_sub_tags.field_stanford_subsite_sub_tags_tid',
+            'value' => $node_tid,
+            'operator' => '='
+        );
+        //
+        $join = new views_join();
+        $join->table = 'field_data_field_s_guides_relates_to';
+        $join->field = 'entity_id';
+        $join->left_table = 'node';
+        $join->left_field = 'nid';
+        $join->type = 'INNER';
+        //add the join the the view query
+        $view->query->add_relationship('field_data_field_s_guides_relates_to',$join,'node');
+        
+        //add the where
+        $view->query->where[1]['conditions'][] = array(
+            'field' => 'field_data_field_s_guides_relates_to.field_s_guides_relates_to_tid',
             'value' => $all_tids,
             'operator' => 'IN'
         );
@@ -77,5 +94,5 @@ function stanford_lbre_helper_block_info_alter(&$blocks, $theme, $code_blocks) {
   $blocks['views']['cfd61adc4b7db1bdee953a216e12302c']['cache'] = DRUPAL_NO_CACHE;
   // stanford_slides_full_width_banner
   $blocks['views']['9530832697bc4866adbecb898b8ca7db']['cache'] = DRUPAL_NO_CACHE;
-  $blocks['views']['guides-block']['cache'] = DRUPAL_NO_CACHE;
+  $blocks['views']['guides_filter-block ']['cache'] = DRUPAL_NO_CACHE;
 }

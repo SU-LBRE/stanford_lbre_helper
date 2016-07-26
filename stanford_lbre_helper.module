@@ -87,12 +87,12 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
 
 function stanford_lbre_helper_block_info_alter(&$blocks, $theme, $code_blocks) {
   // Remove the caching on subsite blocks.
-  $blocks['views']['stanford_events_views-block']['cache'] = DRUPAL_NO_CACHE;
+  //$blocks['views']['stanford_events_views-block']['cache'] = DRUPAL_NO_CACHE;
   // block_2_item_recent_news_list
-  $blocks['views']['f73ff55b085ea49217d347de6630cd5a']['cache'] = DRUPAL_NO_CACHE;
+  //$blocks['views']['f73ff55b085ea49217d347de6630cd5a']['cache'] = DRUPAL_NO_CACHE;
   // block_staff
-  $blocks['views']['cfd61adc4b7db1bdee953a216e12302c']['cache'] = DRUPAL_NO_CACHE;
+  //$blocks['views']['cfd61adc4b7db1bdee953a216e12302c']['cache'] = DRUPAL_NO_CACHE;
   // stanford_slides_full_width_banner
-  $blocks['views']['9530832697bc4866adbecb898b8ca7db']['cache'] = DRUPAL_NO_CACHE;
-  $blocks['views']['guides_filter-block ']['cache'] = DRUPAL_NO_CACHE;
+  //$blocks['views']['9530832697bc4866adbecb898b8ca7db']['cache'] = DRUPAL_NO_CACHE;
+  //$blocks['views']['guides_filter-block ']['cache'] = DRUPAL_NO_CACHE;
 }

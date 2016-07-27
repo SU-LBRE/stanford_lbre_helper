@@ -12,7 +12,6 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
   || ($view->name == 'stanford_news' && $view->current_display == 'block_2_item_recent_news_list')
   || ($view->name == 'stanford_person_vpsa' && $view->current_display == 'block_staff')
   || ($view->name == 'stanford_slides_full_width_banner' && $view->current_display == 'block')) {
-    //  cache_clear_all($view->name, 'cache_views_data', TRUE);
     if (arg(0) == 'node') {
       $nid = arg(1);
       $node = node_load($nid);
@@ -36,17 +35,17 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
         );
       }
     }
-  } elseif (($view->name == 'guides_filter' && $view->current_display == 'block')) {
+  }
+  elseif (($view->name == 'guides_filter' && $view->current_display == 'block')) {
     if (arg(0) == 'node') {
-      $nid = arg(1);
-      $node = node_load($nid);
+      $current_path = url(current_path(), array('relative' => TRUE));
+      $subsite_path = explode('/', $current_path);
+      $path = drupal_lookup_path("source", $subsite_path[1]);
+      $node = menu_get_object("node", 1, $path);
       $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
       $tids = array_keys(taxonomy_allowed_values(field_info_field('field_stanford_subsite_sub_tags')));
       $related_tids = array_keys(taxonomy_allowed_values(field_info_field('field_s_guides_relates_to')));
       if (in_array($node_tid, $tids) || in_array($node_tid, $related_tids)) {
-        
-        // We want all the terms from the current subsite as well as the guides with related terms.
-        $all_tids = array_merge($tids, $related_tids);
         $join = new views_join();
         $join->table = 'field_data_field_stanford_subsite_sub_tags';
         $join->field = 'entity_id';
@@ -57,12 +56,12 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
         $view->query->add_relationship('field_data_field_stanford_subsite_sub_tags',$join,'node');
         
         //add the where
-        $view->query->where[1]['conditions'][] = array(
+        $view->query->where[2]['conditions'][] = array(
             'field' => 'field_data_field_stanford_subsite_sub_tags.field_stanford_subsite_sub_tags_tid',
             'value' => $node_tid,
             'operator' => '='
         );
-        //
+        
         $join = new views_join();
         $join->table = 'field_data_field_s_guides_relates_to';
         $join->field = 'entity_id';
@@ -73,11 +72,13 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
         $view->query->add_relationship('field_data_field_s_guides_relates_to',$join,'node');
         
         //add the where
-        $view->query->where[1]['conditions'][] = array(
+        $view->query->where[2]['conditions'][] = array(
             'field' => 'field_data_field_s_guides_relates_to.field_s_guides_relates_to_tid',
-            'value' => $all_tids,
+            'value' => array($node_tid => $node_tid),
             'operator' => 'IN'
         );
+        // Using OR since we want guides specifically and those that are related.
+        $view->query->where[2]['type'] = 'OR';
         // Using distinct since multiple terms matching will cause duplicates.
         $query->distinct = TRUE;
       }
@@ -94,5 +95,6 @@ function stanford_lbre_helper_block_info_alter(&$blocks, $theme, $code_blocks) {
   //$blocks['views']['cfd61adc4b7db1bdee953a216e12302c']['cache'] = DRUPAL_NO_CACHE;
   // stanford_slides_full_width_banner
   //$blocks['views']['9530832697bc4866adbecb898b8ca7db']['cache'] = DRUPAL_NO_CACHE;
+  // Disabling cache on block that gets installed within module causes integrity constrain violation(guides_filter-block).
   //$blocks['views']['guides_filter-block ']['cache'] = DRUPAL_NO_CACHE;
 }

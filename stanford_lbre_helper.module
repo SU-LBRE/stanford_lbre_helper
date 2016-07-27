@@ -40,7 +40,9 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
     if (arg(0) == 'node') {
       $current_path = url(current_path(), array('relative' => TRUE));
       $subsite_path = explode('/', $current_path);
-      $path = drupal_lookup_path("source", $subsite_path[1]);
+      $last = array_pop($subsite_path);
+      $second_last = array_pop($subsite_path);
+      $path = drupal_lookup_path("source", $second_last);
       $node = menu_get_object("node", 1, $path);
       $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
       $tids = array_keys(taxonomy_allowed_values(field_info_field('field_stanford_subsite_sub_tags')));

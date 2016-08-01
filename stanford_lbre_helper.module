@@ -2,6 +2,7 @@
 /**
  * @file
  */
+include_once 'stanford_lbre_helper.features.inc';
 
 /**
  * Implements hook_views_query_alter().

@@ -101,3 +101,12 @@ function stanford_lbre_helper_block_info_alter(&$blocks, $theme, $code_blocks) {
   // Disabling cache on block that gets installed within module causes integrity constrain violation(guides_filter-block).
   //$blocks['views']['guides_filter-block ']['cache'] = DRUPAL_NO_CACHE;
 }
+
+
+function stanford_lbre_helper_preprocess_page(&$vars) {
+  //
+  if (isset($vars['node']) && $vars['node']->type == 'stanford_publication') {
+    dpm($vars['node']);
+    drupal_add_css(drupal_get_path('module', 'stanford_lbre_helper') . '/css/stanford_lbre_helper_publication.css');
+  }
+}

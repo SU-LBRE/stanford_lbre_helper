@@ -106,7 +106,6 @@ function stanford_lbre_helper_block_info_alter(&$blocks, $theme, $code_blocks) {
 function stanford_lbre_helper_preprocess_page(&$vars) {
   //
   if (isset($vars['node']) && $vars['node']->type == 'stanford_publication') {
-    dpm($vars['node']);
     drupal_add_css(drupal_get_path('module', 'stanford_lbre_helper') . '/css/stanford_lbre_helper_publication.css');
   }
 }

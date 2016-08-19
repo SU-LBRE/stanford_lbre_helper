@@ -1,0 +1,31 @@
+/* css for  stanford_publication */
+
+@media (max-width: 543px) {
+  .field-name-field-s-pub-document .field-item {
+    width: 543px !important;
+  }
+}
+
+@media (min-width: 544px) and (max-width: 767px) {
+  .field-name-field-s-pub-document .field-item {
+    width: 544px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .field-name-field-s-pub-document .field-item {
+    width: 768px !important;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .field-name-field-s-pub-document .field-item {
+    width: 992px !important;
+  }
+}
+
+@media (min-width: 1200px) { 
+   .field-name-field-s-pub-document .field-item {
+      width: 1200px !important;
+  }
+}

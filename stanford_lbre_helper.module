@@ -12,7 +12,9 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
   if (($view->name == 'stanford_events_views' && $view->current_display == 'block')
   || ($view->name == 'stanford_news' && $view->current_display == 'block_2_item_recent_news_list')
   || ($view->name == 'stanford_person_vpsa' && $view->current_display == 'block_staff')
-  || ($view->name == 'stanford_slides_full_width_banner' && $view->current_display == 'block')) {
+  || ($view->name == 'stanford_slides_full_width_banner' && $view->current_display == 'block')
+  || ($view->name == 'news_lbre' && $view->current_display == 'block_5_item_news_list_with_pager')
+  || ($view->name == 'lbre_events' && $view->current_display == 'block_1')) {
     if (arg(0) == 'node') {
       $nid = arg(1);
       $node = node_load($nid);

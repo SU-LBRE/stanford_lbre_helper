@@ -37,6 +37,35 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
       }
     }
   }
+  elseif (($view->name == 'news_lbre' && $view->current_display == 'block_5_item_news_list_with_pager')) {
+    if (arg(0) == 'node') {
+      $current_path = url(current_path(), array('relative' => TRUE));
+      $subsite_path = explode('/', $current_path);
+      $last = array_pop($subsite_path);
+      $second_last = array_pop($subsite_path);
+      $path = drupal_lookup_path("source", $second_last);
+      $node = menu_get_object("node", 1, $path);
+      $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
+      $tids = array_keys(taxonomy_allowed_values(field_info_field('field_stanford_subsite_sub_tags')));
+      if (in_array($node_tid, $tids)) {
+        $join = new views_join();
+        $join->table = 'taxonomy_index';
+        $join->field = 'nid';
+        $join->left_table = 'node';
+        $join->left_field = 'nid';
+        $join->type = 'INNER';
+        //add the join the the view query
+        $view->query->add_relationship('taxonomy_index',$join,'node');
+    
+        //add the where
+        $view->query->where[1]['conditions'][] = array(
+            'field' => 'taxonomy_index.tid',
+            'value' => $node_tid,
+            'operator' => '='
+        );
+      }
+    }
+  }
   elseif (($view->name == 'guides_filter' && $view->current_display == 'block')) {
     if (arg(0) == 'node') {
       $current_path = url(current_path(), array('relative' => TRUE));

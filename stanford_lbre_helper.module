@@ -50,41 +50,50 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
       $parts = explode("/", $path);
       $nid = $parts[1];
       $node = node_load($nid);
+      $node_vid = $node->vid;
       $node_tid = $node->field_stanford_subsite_sub_tags[LANGUAGE_NONE][0]['tid'];
       $tids = array_keys(taxonomy_allowed_values(field_info_field('field_stanford_subsite_sub_tags')));
       $related_tids = array_keys(taxonomy_allowed_values(field_info_field('field_s_guides_relates_to')));
       if (in_array($node_tid, $tids) || in_array($node_tid, $related_tids)) {
         $join = new views_join();
-        $join->table = 'field_data_field_stanford_subsite_sub_tags';
+        $join->table = 'field_revision_field_stanford_subsite_sub_tags';
         $join->field = 'entity_id';
         $join->left_table = 'node';
         $join->left_field = 'nid';
         $join->type = 'INNER';
         //add the join the the view query
-        $view->query->add_relationship('field_data_field_stanford_subsite_sub_tags',$join,'node');
+        $view->query->add_relationship('field_revision_field_stanford_subsite_sub_tags',$join,'node');
         
         //add the where
         $view->query->where[2]['conditions'][] = array(
-            'field' => 'field_data_field_stanford_subsite_sub_tags.field_stanford_subsite_sub_tags_tid',
+            'field' => 'field_revision_field_stanford_subsite_sub_tags.field_stanford_subsite_sub_tags_tid',
             'value' => $node_tid,
             'operator' => '='
         );
         
+        //add the where
+        $view->query->where[2]['conditions'][] = array(
+            'field' => 'field_revision_field_stanford_subsite_sub_tags.revision_id',
+            'value' => $node_vid,
+            'operator' => '='
+        );
+        
         $join = new views_join();
-        $join->table = 'field_data_field_s_guides_relates_to';
+        $join->table = 'field_revision_field_s_guides_relates_to';
         $join->field = 'entity_id';
         $join->left_table = 'node';
         $join->left_field = 'nid';
         $join->type = 'INNER';
         //add the join the the view query
-        $view->query->add_relationship('field_data_field_s_guides_relates_to',$join,'node');
+        $view->query->add_relationship('field_revision_field_s_guides_relates_to',$join,'node');
         
         //add the where
         $view->query->where[2]['conditions'][] = array(
-            'field' => 'field_data_field_s_guides_relates_to.field_s_guides_relates_to_tid',
+            'field' => 'field_revision_field_s_guides_relates_to.field_s_guides_relates_to_tid',
             'value' => array($node_tid => $node_tid),
             'operator' => 'IN'
         );
+        
         // Using OR since we want guides specifically and those that are related.
         $view->query->where[2]['type'] = 'OR';
         // Using distinct since multiple terms matching will cause duplicates.

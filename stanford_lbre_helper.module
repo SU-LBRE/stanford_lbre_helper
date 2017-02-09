@@ -81,8 +81,10 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
         $join = new views_join();
         $join->table = 'field_revision_field_s_guides_relates_to';
         $join->field = 'entity_id';
+        $join->field = 'revision_id';
         $join->left_table = 'node';
         $join->left_field = 'nid';
+        $join->left_field = 'vid';
         $join->type = 'INNER';
         //add the join the the view query
         $view->query->add_relationship('field_revision_field_s_guides_relates_to',$join,'node');

@@ -100,7 +100,6 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
         $view->query->where[2]['type'] = 'OR';
         // Using distinct since multiple terms matching will cause duplicates.
         $query->distinct = TRUE;
-        dpm($view);
       }
     }
   }

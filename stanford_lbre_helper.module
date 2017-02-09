@@ -94,6 +94,13 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
             'operator' => 'IN'
         );
         
+       //add the where
+        $view->query->where[2]['conditions'][] = array(
+            'field' => 'field_revision_field_s_guides_relates_to.revision_id',
+            'value' => $node_vid,
+            'operator' => '='
+        );
+        
         // Using OR since we want guides specifically and those that are related.
         $view->query->where[2]['type'] = 'OR';
         // Using distinct since multiple terms matching will cause duplicates.

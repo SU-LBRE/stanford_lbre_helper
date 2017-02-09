@@ -81,8 +81,10 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
         $join = new views_join();
         $join->table = 'field_revision_field_s_guides_relates_to';
         $join->field = 'entity_id';
+        $join->field = 'revision_id';
         $join->left_table = 'node';
         $join->left_field = 'nid';
+        $join->left_field = 'vid';
         $join->type = 'INNER';
         //add the join the the view query
         $view->query->add_relationship('field_revision_field_s_guides_relates_to',$join,'node');
@@ -94,17 +96,11 @@ function stanford_lbre_helper_views_query_alter(&$view, &$query) {
             'operator' => 'IN'
         );
         
-       //add the where
-        $view->query->where[2]['conditions'][] = array(
-            'field' => 'field_revision_field_s_guides_relates_to.revision_id',
-            'value' => $node_vid,
-            'operator' => '='
-        );
-        
         // Using OR since we want guides specifically and those that are related.
         $view->query->where[2]['type'] = 'OR';
         // Using distinct since multiple terms matching will cause duplicates.
         $query->distinct = TRUE;
+        dpm($view);
       }
     }
   }
